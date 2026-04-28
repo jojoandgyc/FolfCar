@@ -1,0 +1,88 @@
+# Ubuntu / Debian rootfs and generated filesystem
+rk3588-linux/ubuntu/binary/
+rk3588-linux/ubuntu/cache/
+rk3588-linux/ubuntu/rootfs/
+rk3588-linux/ubuntu/rootfs.img
+rk3588-linux/ubuntu/*.tar.xz
+rk3588-linux/debian/*.tar.xz
+
+# Kernel heavy build outputs
+rk3588-linux/kernel/vmlinux
+rk3588-linux/kernel/vmlinux.o
+rk3588-linux/kernel/*.o
+rk3588-linux/kernel/*.ko
+rk3588-linux/kernel/*.a
+
+# Buildroot downloads / cache
+rk3588-linux/buildroot/dl/
+rk3588-linux/buildroot/output/
+
+# General build outputs
+rk3588-linux/output/
+rk3588-linux/build/
+rk3588-linux/.repo/
+
+# Large binary/archive/image files
+*.img
+*.iso
+*.bin
+*.tar
+*.tar.gz
+*.tgz
+*.tar.xz
+*.zip
+*.7z
+*.rar
+*.deb
+*.rpm
+*.bz2
+
+# Compiled files
+*.o
+*.ko
+*.a
+*.so
+*.dtb
+*.dtbo
+
+# Logs/cache/temp
+*.log
+tmp/
+.cache/
+
+# Do not upload temporary/tool generated files
+rk3588-linux/.codex_tmp_pymupdf/
+
+# Prebuilt toolchains are huge; usually should not be committed
+rk3588-linux/prebuilts/
+
+# Windows tools / binary tools
+rk3588-linux/tools/windows/
+rk3588-linux/tools/linux/PinDebug/
+rk3588-linux/tools/linux/rk_sign_tool/bin/
+
+# Large media / binary files
+*.exe
+*.dll
+*.pyd
+*.wav
+*.ttf
+
+# Runtime binary libs in demos
+rk3588-linux/external/camera_engine_rkaiq/rkisp_demo/demo/iio/lib/
+
+# Tool binaries
+rk3588-linux/device/rockchip/common/tools/
+rk3588-linux/device/rockchip/common/data/tools/
+rk3588-linux/tools/linux/Linux_SecurityAVB/scripts/fastboot
+rk3588-linux/tools/linux/rk_sign_tool/
+rk3588-linux/rkbin/tools/
+
+# Sample media / game files
+rk3588-linux/device/rockchip/common/images/oem/
+rk3588-linux/buildroot/board/rockchip/rk3588/fs-overlay/oem/
+*.mp4
+*.gba
+
+# PDFs/docs if you don't need them in GitHub
+*.pdf
