@@ -21,6 +21,16 @@ endmenu
 
 menu "Proximity and distance sensors"
 
+config HCSR04_IIO
+	tristate "HC-SR04 GPIO ultrasonic sensor"
+	depends on GPIOLIB
+	help
+	  Say Y here to build a GPIO bitbanged driver for the HC-SR04
+	  ultrasonic distance sensor using one trigger GPIO and one echo GPIO.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called hcsr04_iio.
+
 config ISL29501
 	tristate "Intersil ISL29501 Time Of Flight sensor"
 	depends on I2C
