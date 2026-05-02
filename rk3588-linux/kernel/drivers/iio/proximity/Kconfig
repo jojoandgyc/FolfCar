@@ -31,6 +31,17 @@ config HCSR04_IIO
 	  To compile this driver as a module, choose M here: the
 	  module will be called hcsr04_iio.
 
+config KC38_GPIO
+	tristate "KC38 GPIO infrared proximity sensor"
+	depends on GPIOLIB
+	help
+	  Say Y here to build a GPIO interrupt driven driver for the KC38
+	  infrared obstacle/proximity sensor. The module provides one digital
+	  output line: high means object detected, low means no object detected.
+
+	  To compile this driver as a module, choose M here: the module will be
+	  called kc38_gpio.
+
 config ISL29501
 	tristate "Intersil ISL29501 Time Of Flight sensor"
 	depends on I2C

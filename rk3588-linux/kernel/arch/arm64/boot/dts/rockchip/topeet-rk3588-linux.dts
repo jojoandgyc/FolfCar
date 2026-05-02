@@ -160,6 +160,18 @@
 		pinctrl-0 = <&hcsr04_trig_pin &hcsr04_echo_pin>;
 		status = "okay";
 	};
+
+	/*
+	 * KC38 infrared obstacle/proximity sensor.
+	 * out: GPIO0_C6, high means object detected.
+	 */
+	kc38_ir {
+		compatible = "qwe036,kc38-ir";
+		out-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&kc38_out_pin>;
+		status = "okay";
+	};
 };
 
 &i2c6{
@@ -343,6 +355,13 @@
 		/* Echo input pin for HC-SR04 */
 		hcsr04_echo_pin: hcsr04-echo-pin {
 			rockchip,pins = <0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	kc38 {
+		/* KC38 digital output pin */
+		kc38_out_pin: kc38-out-pin {
+			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 
