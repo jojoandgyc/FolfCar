@@ -27,6 +27,12 @@ esac
 
 sudo cp -rfp overlay/* ${chroot_dir}/ || true
 
+# NetworkManager ignores system connection files unless they are locked down.
+if [ -d "${chroot_dir}/etc/NetworkManager/system-connections" ]; then
+  sudo chown root:root "${chroot_dir}"/etc/NetworkManager/system-connections/* 2>/dev/null || true
+  sudo chmod 600 "${chroot_dir}"/etc/NetworkManager/system-connections/* 2>/dev/null || true
+fi
+
 sudo mount -t proc /proc ${chroot_dir}/proc
 sudo mount -t sysfs /sys ${chroot_dir}/sys
 sudo mount -o bind /dev ${chroot_dir}/dev

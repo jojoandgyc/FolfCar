@@ -208,6 +208,31 @@
 	};
 };
 
+/*
+ * BMI270 on TOPEET RK3588
+ *
+ * Routed to the SoC's I2C2 controller on the M4 pinmux:
+ *   U16-18 -> I2C2_SCL_M4
+ *   U16-20 -> I2C2_SDA_M4
+ *
+ * The driver supports both 0x68 and 0x69 depending on the BMI270 SDO strap.
+ * Current wiring responds at 0x69.
+ */
+&i2c2 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2m4_xfer>;
+
+	bmi270@69 {
+		compatible = "bosch,bmi270";
+		reg = <0x69>;
+		status = "okay";
+		mount-matrix = "1", "0", "0",
+			       "0", "1", "0",
+			       "0", "0", "1";
+	};
+};
+
 //fan
 &pwm12 {
     status = "okay";
@@ -309,6 +334,12 @@
         status = "okay";
         pinctrl-names = "default";
         pinctrl-0 = <&uart0m2_xfer>;
+};
+
+&uart9 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart9m0_xfer>;
 };
 
 //HDMIIN
