@@ -172,6 +172,22 @@
 		pinctrl-0 = <&kc38_out_pin>;
 		status = "okay";
 	};
+
+	kc38_ir_1 {
+		compatible = "qwe036,kc38-ir";
+		out-gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&kc38_out1_pin>;
+		status = "okay";
+	};
+
+	kc38_ir_2 {
+		compatible = "qwe036,kc38-ir";
+		out-gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&kc38_out2_pin>;
+		status = "okay";
+	};
 };
 
 &i2c6{
@@ -209,16 +225,71 @@
 };
 
 /*
- * BMI270 on TOPEET RK3588
+ * Sensor block from the TOPEET schematic on I2C4:
+ * - STK3311-A ambient light + proximity sensor @0x48
+ * - ICM-20600 accel/gyro @0x68 (AD0 strapped low)
+ *
+ * The schematic labels ALPS_INT_L / GSENSOR_INT_L, but this board DTS does
+ * not currently map those nets to SoC GPIOs. Keep both devices in polling
+ * mode for now to avoid binding them to the wrong IRQ line.
+ */
+&i2c4 {
+	status = "okay";
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c4m1_xfer>;
+
+	stk3311_light: light@48 {
+		compatible = "ls_stk3x1x";
+		reg = <0x48>;
+		status = "okay";
+		type = <SENSOR_TYPE_LIGHT>;
+		irq_enable = <0>;
+		poll_delay_ms = <200>;
+	};
+
+	stk3311_proximity: proximity@48 {
+		compatible = "ps_stk3x1x";
+		reg = <0x48>;
+		status = "okay";
+		type = <SENSOR_TYPE_PROXIMITY>;
+		irq_enable = <0>;
+		poll_delay_ms = <200>;
+	};
+
+	icm20600_acc: accel@68 {
+		compatible = "icm2060x_acc";
+		reg = <0x68>;
+		status = "okay";
+		type = <SENSOR_TYPE_ACCEL>;
+		irq_enable = <0>;
+		poll_delay_ms = <30>;
+		layout = <1>;
+	};
+
+	icm20600_gyro: gyro@68 {
+		compatible = "icm2060x_gyro";
+		reg = <0x68>;
+		status = "okay";
+		type = <SENSOR_TYPE_GYROSCOPE>;
+		irq_enable = <0>;
+		poll_delay_ms = <30>;
+		layout = <1>;
+	};
+};
+
+/*
+ * Legacy BMI270 bring-up notes kept for reference.
  *
  * Routed to the SoC's I2C2 controller on the M4 pinmux:
  *   U16-18 -> I2C2_SCL_M4
  *   U16-20 -> I2C2_SDA_M4
  *
  * The driver supports both 0x68 and 0x69 depending on the BMI270 SDO strap.
- * Current wiring responds at 0x69.
+ * Current wiring responds at 0x69. This node is disabled because the active
+ * board revision uses the ICM-20600 sensor block on I2C4 instead.
  */
-&i2c2 {
+/*&i2c2 {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c2m4_xfer>;
@@ -230,6 +301,23 @@
 		mount-matrix = "1", "0", "0",
 			       "0", "1", "0",
 			       "0", "0", "1";
+	};
+};*/
+
+/* ESP32 hosted-control GPIOs for the SPI4 Wi-Fi module */
+&pinctrl {
+	esp32_hosted {
+		esp32_reset_pin: esp32-reset-pin {
+			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		esp32_handshake_pin: esp32-handshake-pin {
+			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		esp32_dataready_pin: esp32-dataready-pin {
+			rockchip,pins = <1 RK_PD1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
 	};
 };
 
@@ -304,7 +392,7 @@
         /* rx_delay = <0x3f>; */
 
         phy-handle = <&rgmii_phy1>;
-        status = "okay";
+        status = "disabled";
 };
 &mdio0 {
         rgmii_phy0: phy@1 {
@@ -329,13 +417,29 @@
         assigned-clock-rates = <100000000>;
 };
 
-//485
+/* RS485 transceiver console/debug port */
 &uart0 {
         status = "okay";
         pinctrl-names = "default";
         pinctrl-0 = <&uart0m2_xfer>;
 };
 
+/* ESP32 Wi-Fi module on SPI4 */
+&spi4 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi4m2_cs0 &spi4m2_pins>;
+	num-cs = <1>;
+};
+
+/* RS485-connected AT6010 mmWave radar, 921600 baud */
+&uart3 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart3m0_xfer>;
+};
+
+/* ATGM336H GPS receiver, 9600 baud */
 &uart9 {
 	status = "okay";
 	pinctrl-names = "default";
@@ -377,6 +481,7 @@
                 };
         };
 
+	/* HC-SR04 ultrasonic ranging pins */
 	hcsr04 {
 		/* Trigger output pin for HC-SR04 */
 		hcsr04_trig_pin: hcsr04-trig-pin {
@@ -389,10 +494,18 @@
 		};
 	};
 
+	/* KC38 infrared obstacle sensor inputs */
 	kc38 {
 		/* KC38 digital output pin */
 		kc38_out_pin: kc38-out-pin {
 			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+		kc38_out1_pin: kc38-out1-pin {
+			rockchip,pins = <3 RK_PB6 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+
+		kc38_out2_pin: kc38-out2-pin {
+			rockchip,pins = <3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 
