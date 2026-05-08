@@ -15,9 +15,8 @@ key-mgmt=wpa-psk
 psk=brain666
 
 [ipv4]
-address1=192.168.0.188/24,192.168.0.1
-dns=192.168.0.1;223.5.5.5;8.8.8.8;
-method=manual
+dns=223.5.5.5;8.8.8.8;
+method=auto
 
 [ipv6]
 addr-gen-mode=default

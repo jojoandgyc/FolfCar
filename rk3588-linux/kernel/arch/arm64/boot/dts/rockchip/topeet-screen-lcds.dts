@@ -4,9 +4,9 @@
 //#define LCD_TYPE_LVDS_10_1_1024x600_GT911  //VP2
 //#define LCD_TYPE_LVDS_7_0  //VP2
 //#define LCD_TYPE_HDMI1  //VP1
-//#define LCD_TYPE_HDMI0  //VP0
+#define LCD_TYPE_HDMI0  //VP0
 //#define LCD_TYPE_TYPEC_DP  //VP1
-#define LCD_TYPE_MIPI1    //VP3
+//#define LCD_TYPE_MIPI1    //VP3
 
 / {
 backlight: backlight {
@@ -652,7 +652,8 @@ backlight: backlight {
 
 #if defined(LCD_TYPE_MIPI1)
 
-&i2c3
+/* U19 is reused as UART3_M0, so the MIPI1 touch controller on i2c3m0 is disabled. */
+/*&i2c3
 {
     status = "okay";
     pinctrl-0 = <&i2c3m0_xfer>;
@@ -667,11 +668,11 @@ backlight: backlight {
 		touchscreen-size-x = <800>;
 		touchscreen-size-y = <1280>;
 	};
-};
+};*/
 #endif
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-0 = <&i2c2m4_xfer>;
 #if defined(LCD_TYPE_MIPI0) || defined(LCD_TYPE_LVDS_7_0)
 	ft5x06@38 {
@@ -964,5 +965,3 @@ backlight: backlight {
 
 
 #endif
-
-

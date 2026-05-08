@@ -1,4 +1,4 @@
-#define CAMERA_J1  //U20
+//#define CAMERA_J1  //U20
 //#define CAMERA_J2  //U18
 //#define CAMERA_J3  //U19
 //#define CAMERA_J4  //U16
@@ -585,11 +585,11 @@
 };
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-0 = <&i2c2m4_xfer>;
 
 	ov5695_1: ov5695@36 {
-		status = "okay";
+		status = "disabled";
 		compatible = "ovti,ov5695";
 		reg = <0x36>;
 		clocks = <&cru CLK_MIPI_CAMARAOUT_M1>;
@@ -611,7 +611,7 @@
 		};
 	};
 	ov13850_1: ov13850@10 {
-		status = "okay";
+		status = "disabled";
 		compatible = "otvi,ov13850";
 		reg = <0x10>;
 		clocks = <&cru CLK_MIPI_CAMARAOUT_M1>;
@@ -717,4 +717,3 @@
 
 
 #endif
-

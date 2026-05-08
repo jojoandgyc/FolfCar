@@ -7,6 +7,13 @@
 / {
 	model = "TOPEET RK3588 LP4 LP5 Board";
 	compatible = "rockchip,rk3588-evb3-lp5-v10", "rockchip,rk3588";
+	pinctrl-names = "default";
+	pinctrl-0 = <&esp32_reset_pin
+		     &esp32_handshake_pin
+		     &esp32_dataready_pin
+		     &cam_j1_j3_pwdn_pin
+		     &cam_j4_pwdn_pin
+		     &cam_j1_pwdm_pin>;
 
         /* If hdmirx node is disabled, delete the reserved-memory node here. */
         reserved-memory {
@@ -207,7 +214,7 @@
 };
 
 &i2c7 {
-	status = "okay";
+	status = "disabled";
 
     //es8388声卡
 	es8388: es8388@11 {
@@ -317,6 +324,26 @@
 
 		esp32_dataready_pin: esp32-dataready-pin {
 			rockchip,pins = <1 RK_PD1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	camera-power {
+		/*
+		 * Keep only the camera module power-down/mode pins in the
+		 * inactive state so the MIPI camera headers stay powered.
+		 * This intentionally does not enable sensor reset, clocks,
+		 * I2C, or CSI routing.
+		 */
+		cam_j1_j3_pwdn_pin: cam-j1-j3-pwdn-pin {
+			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_output_low_pull_none>;
+		};
+
+		cam_j4_pwdn_pin: cam-j4-pwdn-pin {
+			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_output_low_pull_none>;
+		};
+
+		cam_j1_pwdm_pin: cam-j1-pwdm-pin {
+			rockchip,pins = <2 RK_PC5 RK_FUNC_GPIO &pcfg_output_low_pull_none>;
 		};
 	};
 };
@@ -432,11 +459,17 @@
 	num-cs = <1>;
 };
 
-/* RS485-connected AT6010 mmWave radar, 921600 baud */
+/* Reuse GPIO1_C0/C1 as UART3_M0 instead of I2C3_M0. */
+&i2c3 {
+	status = "disabled";
+};
+
+/* RS485-connected AT6010 mmWave radar, 115200 baud */
 &uart3 {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart3m0_xfer>;
+	current-speed = <115200>;
 };
 
 /* ATGM336H GPS receiver, 9600 baud */
